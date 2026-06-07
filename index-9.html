@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>칭찬스티커 프롬프트 생성기 ⭐</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Gaegu:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #FFF0F5 0%, #E8F4FD 50%, #F0FFF4 100%);
+      --card: #ffffff;
+      --shadow: 0 2px 20px rgba(0,0,0,0.08);
+      --border: #E2E8F0;
+      --text: #2D3748;
+      --muted: #718096;
+      --accent: #667EEA;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      padding: 28px 16px 60px;
+      color: var(--text);
+    }
+    .wrap { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+    /* Header */
+    .header { text-align: center; margin-bottom: 16px; }
+    .header .star { font-size: 44px; display: block; margin-bottom: 8px; animation: bounce 2s infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .header h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+    .header p { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 13px; font-weight: 700; color: #4A5568;
+      margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+    }
+
+    /* Input */
+    input[type=text] {
+      width: 100%; padding: 11px 14px; border-radius: 12px;
+      border: 2px solid var(--border); font-size: 15px;
+      font-family: inherit; outline: none; transition: border 0.2s;
+      background: #fff;
+    }
+    input[type=text]:focus { border-color: var(--accent); }
+
+    /* Gender buttons */
+    .gender-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .gender-btn {
+      padding: 11px; border-radius: 12px; border: 2px solid var(--border);
+      background: #fff; font-family: inherit; font-size: 14px;
+      cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.4;
+    }
+    .gender-btn.active { border-color: #4A90D9; background: #EBF4FF; color: #1E40AF; font-weight: 700; }
+    .gender-btn small { font-size: 11px; opacity: 0.65; display: block; }
+
+    /* Color chips */
+    .color-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .color-chip {
+      padding: 7px 12px; border-radius: 20px; border: 2px solid var(--border);
+      background: #fff; font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      font-family: inherit; transition: all 0.2s;
+    }
+    .color-chip.active { border-color: #4A90D9; font-weight: 700; }
+    .color-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #ccc; flex-shrink: 0; }
+
+    /* Phrase buttons */
+    .phrase-list { display: flex; flex-direction: column; gap: 8px; }
+    .phrase-btn {
+      padding: 10px 16px; border-radius: 12px; border: 2px solid var(--border);
+      background: #fff; font-family: inherit; font-size: 14px;
+      cursor: pointer; text-align: left; transition: all 0.2s; color: var(--muted);
+    }
+    .phrase-btn.active { border-color: #9B59B6; background: #F5EEFF; color: #6B21A8; font-weight: 700; }
+    .preview-badge {
+      margin-top: 10px; padding: 8px 14px; background: #FFFBEB;
+      border-radius: 10px; font-size: 13px; color: #92400E;
+      border: 1px dashed #FCD34D;
+    }
+
+    /* Upload grid */
+    .upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .upload-label { font-size: 12px; font-weight: 700; color: #4A5568; margin-bottom: 6px; }
+    .upload-label .req { color: #E53E3E; }
+    .upload-label .opt { color: var(--muted); }
+    .upload-box {
+      border: 2px dashed #CBD5E0; border-radius: 14px; padding: 18px 12px;
+      text-align: center; cursor: pointer; background: #FAFAFA;
+      transition: all 0.2s; min-height: 130px;
+      display: flex; align-items: center; justify-content: center; flex-direction: column;
+    }
+    .upload-box:hover { border-color: var(--accent); background: #F0F4FF; }
+    .upload-box.has-img { background: #F0FFF4; border-color: #68D391; }
+    .upload-box img { max-height: 90px; max-width: 100%; border-radius: 10px; object-fit: contain; margin-bottom: 6px; }
+    .upload-box .ico { font-size: 32px; margin-bottom: 6px; }
+    .upload-box .txt { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .upload-box .ok { font-size: 11px; color: #48BB78; font-weight: 700; }
+    .upload-note { margin-top: 10px; font-size: 11px; color: #A0AEC0; line-height: 1.6; }
+
+    /* Generate button */
+    .gen-btn {
+      padding: 16px; border-radius: 16px; border: none;
+      background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+      color: #fff; font-size: 17px; font-weight: 900;
+      cursor: pointer; font-family: inherit; letter-spacing: 0.3px;
+      box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+      transition: all 0.2s; width: 100%;
+    }
+    .gen-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(102,126,234,0.5); }
+    .gen-btn:disabled { background: #CBD5E0; box-shadow: none; cursor: not-allowed; transform: none; }
+
+    /* Result box */
+    .result-box { background: #1A202C; border-radius: 16px; padding: 20px; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .result-title { color: #68D391; font-weight: 700; font-size: 14px; }
+    .copy-btn {
+      padding: 6px 14px; border-radius: 8px; border: none;
+      background: #4A5568; color: #fff; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .copy-btn.copied { background: #48BB78; }
+    .result-text {
+      color: #E2E8F0; font-size: 13px; line-height: 1.8;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .result-hint {
+      margin-top: 12px; padding: 10px 14px; background: #2D3748;
+      border-radius: 10px; font-size: 12px; color: #A0AEC0; line-height: 1.5;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block; width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Fade in */
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    /* Step badge */
+    .step { display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%; background: var(--accent);
+      color: #fff; font-size: 11px; font-weight: 900; margin-right: 4px; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="star">⭐</span>
+    <h1>칭찬스티커 프롬프트 생성기</h1>
+    <p>ChatGPT DALL-E 최적화 · 30칸 판 + 얼굴 합성 프롬프트 세트</p>
+  </div>
+
+  <!-- 1. 아이 정보 -->
+  <div class="card">
+    <div class="card-title"><span class="step">1</span> 아이 이름 & 성별</div>
+    <input type="text" id="childName" placeholder="아이 이름 (예: 승현, 지우, 하늘)" />
+    <div class="gender-row">
+      <button class="gender-btn active" id="btnBoy" onclick="setGender('boy')">
+        👦 남자아이<small>턱시도 정장</small>
+      </button>
+      <button class="gender-btn" id="btnGirl" onclick="setGender('girl')">
+        👧 여자아이<small>공주 드레스</small>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. 배경 색상 -->
+  <div class="card">
+    <div class="card-title"><span class="step">2</span> 배경 색상</div>
+    <div class="color-row" id="colorRow"></div>
+  </div>
+
+  <!-- 3. 문구 -->
+  <div class="card">
+    <div class="card-title"><span class="step">3</span> 타이틀 문구</div>
+    <div class="phrase-list" id="phraseList"></div>
+    <div id="customWrap" style="display:none; margin-top:8px;">
+      <input type="text" id="customPhrase" placeholder="원하는 문구를 입력하세요" />
+    </div>
+    <div id="previewBadge" class="preview-badge" style="display:none;"></div>
+  </div>
+
+  <!-- 4. 이미지 업로드 -->
+  <div class="card">
+    <div class="card-title"><span class="step">4</span> 이미지 업로드</div>
+    <div class="upload-grid">
+      <div>
+        <div class="upload-label">🦋 캐릭터 이미지 <span class="req">*필수</span></div>
+        <div class="upload-box" id="charBox" onclick="document.getElementById('charInput').click()">
+          <div class="ico">🦋</div>
+          <div class="txt">캐릭터 이미지<br>클릭해서 업로드</div>
+        </div>
+        <input type="file" id="charInput" accept="image/*" style="display:none" onchange="handleUpload('char', this)" />
+      </div>
+      <div>
+        <div class="upload-label">📸 아이 얼굴 사진 <span class="opt">선택</span></div>
+        <div class="upload-box" id="faceBox" onclick="document.getElementById('faceInput').click()">
+          <div class="ico">📸</div>
+          <div class="txt">얼굴 사진<br>클릭해서 업로드</div>
+        </div>
+        <input type="file" id="faceInput" accept="image/*" style="display:none" onchange="handleUpload('face', this)" />
+      </div>
+    </div>
+    <div class="upload-note">
+      * 얼굴 사진 업로드 시 → 얼굴 맞춤 합성 프롬프트 생성<br>
+      * 얼굴 사진 없이도 → 기본 합성 프롬프트 생성됩니다
+    </div>
+  </div>
+
+  <!-- Generate -->
+  <button class="gen-btn" id="genBtn" onclick="generatePrompts()">
+    ✨ 프롬프트 2개 생성하기
+  </button>
+
+  <!-- Results -->
+  <div id="resultSticker" style="display:none;" class="result-box fade-in">
+    <div class="result-header">
+      <span class="result-title">🗺️ 칭찬스티커 판 프롬프트</span>
+      <button class="copy-btn" id="copySticker" onclick="copyText('sticker')">📋 복사</button>
+    </div>
+    <div class="result-text" id="stickerText"></div>
+    <div class="result-hint">💡 ChatGPT → DALL-E 탭 → 위 프롬프트 붙여넣기 → 이미지 생성</div>
+  </div>
+
+  <div id="resultFace" style="display:none;" class="result-box fade-in">
+    <div class="result-header">
+      <span class="result-title" id="faceTitle">🎭 얼굴 합성 프롬프트</span>
+      <button class="copy-btn" id="copyFace" onclick="copyText('face')">📋 복사</button>
+    </div>
+    <div class="result-text" id="faceText"></div>
+    <div class="result-hint" id="faceHint"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────
+  let gender = 'boy';
+  let selectedColor = { label: '스카이 블루', value: 'sky blue', hex: '#AED6F1' };
+  let selectedPhraseIdx = 0;
+  let charBase64 = null;
+  let faceBase64 = null;
+
+  const COLORS = [
+    { label: '스카이 블루', value: 'sky blue', hex: '#AED6F1' },
+    { label: '피치 핑크', value: 'peach pink', hex: '#F4A9B0' },
+    { label: '민트 그린', value: 'mint green', hex: '#A8E6CF' },
+    { label: '라벤더', value: 'lavender', hex: '#C9B8E8' },
+    { label: '버터 옐로우', value: 'butter yellow', hex: '#FDE68A' },
+  ];
+
+  const PHRASES = [
+    n => `${n}이가 달라졌어요`,
+    n => `${n}의 칭찬스티커`,
+    n => `${n}의 보물상자`,
+    () => '__custom__',
+  ];
+  const PHRASE_LABELS = ['○○이가 달라졌어요', '○○의 칭찬스티커', '○○의 보물상자', '✍️ 직접 입력'];
+
+  // ── Init ───────────────────────────────────────────────
+  window.onload = () => {
+    renderColors();
+    renderPhrases();
+  };
+
+  function renderColors() {
+    const row = document.getElementById('colorRow');
+    row.innerHTML = COLORS.map((c, i) => `
+      <button class="color-chip ${i===0?'active':''}" id="chip${i}"
+        onclick="setColor(${i})"
+        style="${i===0 ? `background:${c.hex};border-color:#4A90D9;font-weight:700;` : ''}">
+        <span class="color-dot" style="background:${c.hex}"></span>${c.label}
+      </button>`).join('');
+  }
+
+  function setColor(idx) {
+    selectedColor = COLORS[idx];
+    COLORS.forEach((_, i) => {
+      const el = document.getElementById(`chip${i}`);
+      el.className = 'color-chip' + (i===idx?' active':'');
+      el.style.cssText = i===idx ? `background:${COLORS[i].hex};border-color:#4A90D9;font-weight:700;` : '';
+    });
+    updatePreview();
+  }
+
+  function renderPhrases() {
+    const list = document.getElementById('phraseList');
+    list.innerHTML = PHRASE_LABELS.map((label, i) => `
+      <button class="phrase-btn ${i===0?'active':''}" id="phrase${i}" onclick="setPhrase(${i})">
+        ${i < 3 ? PHRASES[i](getName() || '○○') : label}
+      </button>`).join('');
+  }
+
+  function setPhrase(idx) {
+    selectedPhraseIdx = idx;
+    PHRASE_LABELS.forEach((_, i) => {
+      document.getElementById(`phrase${i}`).className = 'phrase-btn' + (i===idx?' active':'');
+    });
+    document.getElementById('customWrap').style.display = idx===3 ? 'block' : 'none';
+    updatePreview();
+  }
+
+  function setGender(g) {
+    gender = g;
+    document.getElementById('btnBoy').className = 'gender-btn' + (g==='boy'?' active':'');
+    document.getElementById('btnGirl').className = 'gender-btn' + (g==='girl'?' active':'');
+  }
+
+  function getName() {
+    return document.getElementById('childName').value.trim();
+  }
+
+  function getFinalPhrase() {
+    if (selectedPhraseIdx === 3) return document.getElementById('customPhrase').value.trim() || '아이의 칭찬스티커';
+    return PHRASES[selectedPhraseIdx](getName() || '아이');
+  }
+
+  function updatePreview() {
+    const name = getName();
+    const badge = document.getElementById('previewBadge');
+    // refresh phrase labels
+    [0,1,2].forEach(i => {
+      const el = document.getElementById(`phrase${i}`);
+      if (el) el.textContent = PHRASES[i](name || '○○');
+    });
+    if (name && selectedPhraseIdx !== 3) {
+      badge.style.display = 'block';
+      badge.innerHTML = `👀 미리보기: <strong>${getFinalPhrase()}</strong>`;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  document.addEventListener('input', e => {
+    if (e.target.id === 'childName' || e.target.id === 'customPhrase') updatePreview();
+  });
+
+  // ── Upload ─────────────────────────────────────────────
+  function handleUpload(type, input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const b64 = ev.target.result.split(',')[1];
+      const url = URL.createObjectURL(file);
+      if (type === 'char') {
+        charBase64 = b64;
+        renderUploadBox('charBox', url);
+      } else {
+        faceBase64 = b64;
+        renderUploadBox('faceBox', url);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function renderUploadBox(id, url) {
+    const box = document.getElementById(id);
+    box.className = 'upload-box has-img';
+    box.innerHTML = `<img src="${url}" alt="업로드 이미지" /><div class="ok">✅ 업로드 완료! 클릭하면 변경</div>`;
+  }
+
+  // ── Claude API ─────────────────────────────────────────
+  async function callClaude(messages, system) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system,
+        messages,
+      }),
+    });
+    const data = await res.json();
+    return data.content?.find(c => c.type === 'text')?.text?.trim() || '';
+  }
+
+  async function generatePrompts() {
+    const name = getName();
+    if (!name) { alert('아이 이름을 입력해주세요!'); return; }
+    if (!charBase64) { alert('캐릭터 이미지를 업로드해주세요!'); return; }
+
+    const btn = document.getElementById('genBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>분석 중...';
+    document.getElementById('resultSticker').style.display = 'none';
+    document.getElementById('resultFace').style.display = 'none';
+
+    try {
+      // 1) 스티커 판 프롬프트
+      const stickerResult = await callClaude([{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: charBase64 } },
+          { type: 'text', text: `Analyze this character image carefully (style, colors, features, species/type).
+
+Write a DALL-E image generation prompt for a children's praise sticker chart:
+
+LAYOUT:
+- Portrait orientation (A4-ish ratio)
+- Soft ${selectedColor.value} pastel background, rounded rectangle card
+- TOP LEFT: circular photo frame placeholder — white circle, dashed border, camera icon, labeled "PHOTO HERE"
+- TOP RIGHT: the character from this image in cute kawaii/chibi storybook style, match colors and features exactly
+- CENTER: large handwritten-style Korean text "${getFinalPhrase()}" in bold playful font
+- BOTTOM 2/3: exactly 30 numbered sticker circles (1–30) in snake/zigzag path (row1: 1→10 left-to-right, row2: 11→20 right-to-left, row3: 21→30 left-to-right), each circle empty white with soft drop shadow
+- Korean motivational labels: "잘 했어요!" near circle 10, "최고야!" near circle 20, "이야호!" at circle 30
+- Scattered decorative stars, hearts, sparkles in character's color palette
+
+STYLE: flat design, soft pastels, Korean kids sticker book aesthetic, clean printable quality, NO real faces
+
+Output ONLY the prompt text, nothing else.` }
+        ]
+      }], 'You are an expert DALL-E prompt writer for children\'s illustration. Output ONLY the prompt, no explanation, no markdown.');
+
+      document.getElementById('stickerText').textContent = stickerResult;
+      document.getElementById('resultSticker').style.display = 'block';
+
+      // 2) 얼굴 합성 프롬프트
+      const outfit = gender === 'boy'
+        ? 'a smart navy tuxedo suit with a red bow tie and white dress shirt'
+        : 'a beautiful princess ball gown with puffy sleeves, lace details, pastel pink or lavender color';
+
+      let faceResult = '';
+      if (faceBase64) {
+        faceResult = await callClaude([{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: faceBase64 } },
+            { type: 'text', text: `This is a child's face photo. Write a GPT-4o image editing prompt that:
+1. Keeps the child's exact face, facial features, skin tone, and expression perfectly
+2. Replaces ONLY the body/clothing with: ${outfit}
+3. Cheerful front-facing portrait pose, slightly angled
+4. Cute illustrated portrait style, chibi/cartoon feel but realistic face
+5. Circular crop composition, clean white or transparent background
+6. Child's name is "${name}"
+
+Write as if sending to GPT-4o WITH the photo attached.
+Start with: "Using the attached photo of ${name},"
+Output ONLY the prompt text, nothing else.` }
+          ]
+        }], 'You are an expert at writing GPT-4o image editing prompts. Output ONLY the prompt, no explanation.');
+      } else {
+        faceResult = `Using the attached photo of ${name}, keep their exact face, skin tone, and expression unchanged. Replace only the body and clothing with ${outfit}. Pose the child cheerfully facing forward, slightly angled, as if posing for a cute portrait. Style: chibi/cartoon illustration with the child's realistic face preserved exactly. Circular crop composition with a clean white background. Make it look like an adorable character portrait suitable for a children's sticker chart.`;
+      }
+
+      const genderLabel = gender === 'boy' ? '👦 턱시도' : '👧 드레스';
+      document.getElementById('faceTitle').textContent = `🎭 얼굴 합성 프롬프트 (${genderLabel})`;
+      document.getElementById('faceText').textContent = faceResult;
+      document.getElementById('faceHint').textContent = `💡 ChatGPT GPT-4o → 📎 ${name} 얼굴 사진 첨부 → 위 프롬프트 붙여넣기`;
+      document.getElementById('resultFace').style.display = 'block';
+
+    } catch (err) {
+      alert('오류가 발생했어요. 다시 시도해주세요.\n' + err.message);
+      console.error(err);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '✨ 프롬프트 2개 생성하기';
+    }
+  }
+
+  // ── Copy ───────────────────────────────────────────────
+  function copyText(type) {
+    const textEl = type === 'sticker' ? 'stickerText' : 'faceText';
+    const btnEl = type === 'sticker' ? 'copySticker' : 'copyFace';
+    const text = document.getElementById(textEl).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById(btnEl);
+      btn.textContent = '✅ 복사됨!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 복사';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
