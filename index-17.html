@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>칭찬스티커 프롬프트 생성기 ⭐</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#FFF0F5,#E8F4FD,#F0FFF4);min-height:100vh;padding:20px 14px 60px;color:#2D3748}
+.w{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.hd{text-align:center;padding:4px 0 10px}
+.hd h1{font-size:22px;font-weight:900}
+.hd p{color:#718096;font-size:12px;margin-top:4px}
+.card{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.ct{font-size:12px;font-weight:700;color:#4A5568;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.bge{width:18px;height:18px;border-radius:50%;background:#667EEA;color:#fff;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+input{width:100%;padding:10px 12px;border-radius:10px;border:2px solid #E2E8F0;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box}
+input:focus{border-color:#667EEA}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.btn{padding:9px;border-radius:10px;border:2px solid #E2E8F0;background:#fff;font-family:inherit;font-size:13px;cursor:pointer;text-align:center;transition:all .15s}
+.btn.on{border-color:#4A90D9;background:#EBF4FF;color:#1E40AF;font-weight:700}
+.btn small{font-size:10px;opacity:.6;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:6px 10px;border-radius:16px;border:2px solid #E2E8F0;background:#fff;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;transition:all .15s}
+.chip.on{border-color:#4A90D9;font-weight:700}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid #ccc}
+.plist{display:flex;flex-direction:column;gap:6px}
+.pbtn{padding:9px 14px;border-radius:10px;border:2px solid #E2E8F0;background:#fff;font-family:inherit;font-size:13px;cursor:pointer;text-align:left;color:#718096;transition:all .15s}
+.pbtn.on{border-color:#9B59B6;background:#F5EEFF;color:#6B21A8;font-weight:700}
+.prev{margin-top:8px;padding:7px 12px;background:#FFFBEB;border-radius:8px;font-size:12px;color:#92400E;border:1px dashed #FCD34D}
+.flow{background:#fff;border-radius:14px;padding:14px 16px;box-shadow:0 2px 12px rgba(0,0,0,.07);border-left:4px solid #667EEA;font-size:12px;color:#4A5568;line-height:1.8}
+.flow b{color:#2D3748}
+.genbtn{padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#667EEA,#764BA2);color:#fff;font-size:16px;font-weight:900;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(102,126,234,.4);width:100%}
+.result{border-radius:14px;padding:18px;display:none}
+.result.on{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.r1{background:#2D3A1E;border:2px solid #68D391}
+.r2{background:#1A202C;border:2px solid #667EEA}
+.rh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px}
+.r1 .rt{color:#68D391;font-weight:900;font-size:14px}
+.r2 .rt{color:#90CDF4;font-weight:900;font-size:14px}
+.rsub{font-size:10px;opacity:.7;margin-top:1px}
+.cpbtn{padding:5px 12px;border-radius:7px;border:none;background:#4A5568;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.cpbtn.ok{background:#48BB78}
+.r1 .rtx{color:#C6F6D5;font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.r2 .rtx{color:#E2E8F0;font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.how{margin-top:10px;border-radius:8px;padding:10px 12px;font-size:11px;line-height:1.8}
+.r1 .how{background:#1C2A12;color:#9AE6B4}
+.r2 .how{background:#2D3748;color:#A0AEC0}
+.conn{display:none;align-items:center;justify-content:center;gap:8px;padding:8px;background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.07);font-size:12px;color:#667EEA;font-weight:700}
+.conn.on{display:flex}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="hd">
+  <div style="font-size:36px;margin-bottom:6px">⭐</div>
+  <h1>칭찬스티커 프롬프트 생성기</h1>
+  <p>ChatGPT 2단계 이미지 생성 가이드</p>
+</div>
+
+<div class="flow">
+  📋 <b>사용 순서</b><br>
+  🟠 <b>STEP 1</b> — GPT-4o에 <b>아이 얼굴 사진</b> 📎 첨부 + ①번 프롬프트 → 턱시도/드레스 이미지 저장<br>
+  🟢 <b>STEP 2</b> — DALL-E에 <b>①이미지</b> 📎 + <b>캐릭터 이미지</b> 📎 총 2장 첨부 + ②번 프롬프트 → 완성! 🎉
+</div>
+
+<!-- 1. 이름/성별 -->
+<div class="card">
+  <div class="ct"><span class="bge">1</span>아이 이름 &amp; 성별</div>
+  <input id="nm" placeholder="아이 이름 (예: 승현, 지우)" oninput="upv()"/>
+  <div class="row2">
+    <button class="btn on" id="bb" onclick="sg('boy')">👦 남자아이<small>턱시도</small></button>
+    <button class="btn" id="bg" onclick="sg('girl')">👧 여자아이<small>드레스</small></button>
+  </div>
+</div>
+
+<!-- 2. 배경 색상 -->
+<div class="card">
+  <div class="ct"><span class="bge">2</span>배경 색상</div>
+  <div class="chips" id="cr"></div>
+</div>
+
+<!-- 3. 문구 -->
+<div class="card">
+  <div class="ct"><span class="bge">3</span>타이틀 문구</div>
+  <div class="plist" id="pl"></div>
+  <div id="cw" style="display:none;margin-top:6px"><input id="ci" placeholder="직접 입력하세요" oninput="upv()"/></div>
+  <div id="pv" class="prev" style="display:none"></div>
+</div>
+
+<button class="genbtn" onclick="gen()">✨ 프롬프트 생성하기</button>
+
+<div class="result r1" id="r1">
+  <div class="rh">
+    <div class="rt">🟢 STEP 1 프롬프트<div class="rsub" id="rs1"></div></div>
+    <button class="cpbtn" id="c1" onclick="doCopy('t1','c1')">📋 복사</button>
+  </div>
+  <div class="rtx" id="t1"></div>
+  <div class="how">① ChatGPT 열기 → ② <b>아이 얼굴 사진</b> 📎 첨부 → ③ 위 프롬프트 붙여넣기 → ④ 이미지 <b>저장!</b></div>
+</div>
+
+<div class="conn" id="conn">↓ STEP 1 이미지 저장 후 STEP 2 진행 ↓</div>
+
+<div class="result r2" id="r2">
+  <div class="rh">
+    <div class="rt">🔵 STEP 2 프롬프트<div class="rsub">칭찬스티커 판 완성</div></div>
+    <button class="cpbtn" id="c2" onclick="doCopy('t2','c2')">📋 복사</button>
+  </div>
+  <div class="rtx" id="t2"></div>
+  <div class="how">① ChatGPT 새 대화 → ② <b>STEP1 이미지</b> 📎 + <b>캐릭터 이미지</b> 📎 2장 첨부 → ③ 위 프롬프트 붙여넣기 → ④ 완성! 🎉</div>
+</div>
+
+</div>
+<script>
+const C=[{l:'스카이 블루',v:'sky blue',h:'#AED6F1'},{l:'피치 핑크',v:'peach pink',h:'#F4A9B0'},{l:'민트 그린',v:'mint green',h:'#A8E6CF'},{l:'라벤더',v:'lavender',h:'#C9B8E8'},{l:'옐로우',v:'butter yellow',h:'#FDE68A'}];
+const PF=[n=>`${n}이가 달라졌어요`,n=>`${n}의 칭찬스티커`,n=>`${n}의 보물상자`];
+const PL=['○○이가 달라졌어요','○○의 칭찬스티커','○○의 보물상자','✍️ 직접 입력'];
+let gnd='boy',ci=0,pi=0;
+window.onload=()=>{rC();rP()};
+const gn=()=>document.getElementById('nm').value.trim();
+const gph=()=>pi===3?(document.getElementById('ci').value.trim()||'아이의 칭찬스티커'):PF[pi](gn()||'아이');
+function rC(){document.getElementById('cr').innerHTML=C.map((c,i)=>`<button class="chip${i===0?' on':''}" id="cc${i}" onclick="sc(${i})" style="${i===0?`background:${c.h};border-color:#4A90D9;font-weight:700`:''}"><span class="dot" style="background:${c.h}"></span>${c.l}</button>`).join('')}
+function sc(i){ci=i;C.forEach((_,j)=>{const e=document.getElementById(`cc${j}`);e.className='chip'+(j===i?' on':'');e.style.cssText=j===i?`background:${C[i].h};border-color:#4A90D9;font-weight:700`:''})}
+function rP(){document.getElementById('pl').innerHTML=PL.map((l,i)=>`<button class="pbtn${i===0?' on':''}" id="pp${i}" onclick="sp(${i})">${i<3?PF[i](gn()||'○○'):l}</button>`).join('')}
+function sp(i){pi=i;PL.forEach((_,j)=>document.getElementById(`pp${j}`).className='pbtn'+(j===i?' on':''));document.getElementById('cw').style.display=i===3?'block':'none';upv()}
+function sg(g){gnd=g;document.getElementById('bb').className='btn'+(g==='boy'?' on':'');document.getElementById('bg').className='btn'+(g==='girl'?' on':'')}
+function upv(){const n=gn();[0,1,2].forEach(i=>{const e=document.getElementById(`pp${i}`);if(e)e.textContent=PF[i](n||'○○')});const pv=document.getElementById('pv');if(n&&pi<3){pv.style.display='block';pv.innerHTML=`👀 미리보기: <b>${gph()}</b>`}else pv.style.display='none'}
+function gen(){
+  const n=gn();
+  if(!n){alert('아이 이름을 입력해주세요!');return}
+  const isB=gnd==='boy';
+  const out=isB?'a smart navy tuxedo with red bow tie, little gentleman style':'a beautiful princess ball gown, puffy sleeves, pastel pink or lavender, little princess style';
+  document.getElementById('t1').textContent=`I attached a photo of my child named ${n}.
+
+1. FACE: Keep ${n}'s face exactly — all features, skin tone, expression unchanged.
+2. OUTFIT: Replace body/clothing with: ${out}.
+3. POSE: Cheerful front-facing portrait, slightly angled, clean white background.
+4. STYLE: Chibi/cartoon body with realistic face from the photo.
+5. OUTPUT: Single portrait of ${n}, no other people.
+
+This will be used as the face photo on a children's praise sticker chart.`;
+
+  document.getElementById('t2').textContent=`I attached two images:
+- Image 1: ${n} wearing ${isB?'tuxedo':'princess dress'} (chibi style)
+- Image 2: Character reference image (use this character's exact appearance)
+
+Create a children's praise sticker chart:
+
+BACKGROUND: Soft ${C[ci].v} pastel, portrait orientation (A4 ratio), rounded card.
+
+TOP LEFT: ${n}'s portrait from Image 1, inside a circular decorative frame.
+TOP RIGHT: The character from Image 2, drawn in kawaii/chibi storybook style.
+CENTER: Large bold Korean handwritten text: "${gph()}"
+
+STICKER GRID (bottom 2/3 of card):
+- 30 numbered empty white circles (1–30), snake path layout:
+  Row 1: 1→10 (left to right)
+  Row 2: 20→11 (right to left)
+  Row 3: 21→30 (left to right)
+- Soft drop shadow on each circle, ready for stickers
+- Korean labels: "잘 했어요! 👏" at 10, "최고야! 🌟" at 20, "이야호! 🎉" at 30
+- Scattered stars ✦ hearts ♥ sparkles as decoration
+
+STYLE: Korean kids sticker book, flat design, soft pastels, cheerful, printable.`;
+
+  document.getElementById('rs1').textContent=`아이 얼굴 → ${isB?'👦 턱시도':'👧 드레스'} 합성`;
+  document.getElementById('r1').className='result r1 on';
+  document.getElementById('conn').className='conn on';
+  document.getElementById('r2').className='result r2 on';
+  setTimeout(()=>document.getElementById('r1').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+function doCopy(tid,bid){
+  navigator.clipboard.writeText(document.getElementById(tid).textContent).then(()=>{
+    const b=document.getElementById(bid);b.textContent='✅ 복사됨!';b.classList.add('ok');
+    setTimeout(()=>{b.textContent='📋 복사';b.classList.remove('ok')},2000);
+  });
+}
+</script>
+</body>
+</html>
